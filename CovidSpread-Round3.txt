@@ -1,0 +1,63 @@
+			COVID Spread
+
+Aterp is the head nurse at city hospital. City hospital contains R*C number of wards and structure of hospital is in the form of a 2-D matrix.
+Given a matrix of dimension R*C where each cell in the matrix can have values 0, 1 or 2 which has the following meaning:
+0 : Empty ward
+1 : Cells have uninfected patients
+2 : Cells have infected patients
+
+An infected patient at ward [i,j] can infect other uninfected patient at indexes [i-1,j], [i+1,j], [i,j-1], [i,j+1] (up, down, left and right) in unit time. Help Aterp determine the minimum units of time after which there won't remain any uninfected patient i.e all patients would be infected. If all patients are not infected after infinite units of time then simply return -1.
+
+
+Example :
+
+Input:
+3 5
+2 1 0 2 1
+1 0 1 2 1
+1 0 0 2 1 
+
+Output:
+2
+
+Solution :
+
+class Solution{
+     public int helpaterp(int[][] hospital) {
+        Queue<int[]> q = new LinkedList<>();
+        int time=0, uninfected = 0;
+        for(int i=0;i<hospital.length;i++){
+            for(int j=0;j<hospital[0].length;j++){
+                if(hospital[i][j]==2)
+                    q.add(new int[]{i,j});       // add all infected patients indices pairs in queue 
+                else if(hospital[i][j] == 1)
+                    uninfected++;            // count uninfected patients
+            }
+        }
+        if(uninfected==0)
+            return 0;
+        int d[][] = {{1,0}, {0,1}, {-1,0}, {0,-1},};        // defined four directions
+        while(!q.isEmpty() && uninfected>0){
+            time++;
+            for(int s = q.size();s>0;s--){
+                int[] p = q.poll();
+                for(int[] dt : d){
+                    int x = p[0] + dt[0];
+                    int y = p[1] + dt[1];
+                    if(x<0 || y<0 || x>=hospital.length || y>=hospital[0].length || hospital[x][y] == 2 || hospital[x][y] == 0)
+                        continue;
+                    q.add(new int[]{x,y}); //add uninfected patients indices pairs in queue
+                    hospital[x][y] = 2; // marking as infected
+                    uninfected--;
+                }
+            }
+        }
+        if(uninfected==0)
+            return time;
+        else
+            return -1;
+    }
+}
+
+
+
